@@ -204,6 +204,7 @@ class _Dot extends Shape {
     onMouseDown.add((e) {
       color = Colors.black;
       draw();
+      print('onMOuseDown');
       onMouseUp.addOnce((_) {
         scale = 1;
         color = Colors.red;
