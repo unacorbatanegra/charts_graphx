@@ -1,4 +1,10 @@
 # Charts graphx 
 
-charts maded by [@roipeker](https://github.com/roipeker) using Graphx
+a little charts library maded by using graphx
 
+
+### Contributors 
+
+[@roipeker](https://github.com/roipeker)
+
+[@unacorbatanegra](https://github.com/unacorbatanegra)
