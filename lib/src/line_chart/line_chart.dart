@@ -5,12 +5,16 @@ import 'widgets/background.dart';
 import 'widgets/bezier_control_point.dart';
 
 class LineChart<T> extends StatelessWidget {
-  final List<T> lista;
+  final List<List<T>> lista;
   final double Function(T value) value;
+  final String Function(T value) texto;
+  final void Function(T value) onTap;
   const LineChart(
     this.lista,
     this.value, {
     Key key,
+    this.texto,
+    this.onTap,
   }) : super(key: key);
 
   @override
@@ -20,6 +24,8 @@ class LineChart<T> extends StatelessWidget {
         front: _LineChartPainter(
           lista,
           value,
+          texto,
+          onTap,
         ),
       ),
     );
@@ -27,9 +33,16 @@ class LineChart<T> extends StatelessWidget {
 }
 
 class _LineChartPainter<T> extends SceneRoot {
-  final List<T> lista;
+  final List<List<T>> lista;
   final double Function(T value) value;
-  _LineChartPainter(this.lista, this.value);
+  final String Function(T value) texto;
+  final void Function(T value) onTap;
+  _LineChartPainter(
+    this.lista,
+    this.value,
+    this.texto,
+    this.onTap,
+  );
   @override
   void init() {
     config(autoUpdateAndRender: true, usePointer: true);
@@ -38,14 +51,21 @@ class _LineChartPainter<T> extends SceneRoot {
   @override
   void ready() {
     super.ready();
-    addChild(_Base<T>(lista, value));
+    addChild(_Base<T>(lista, value, texto, onTap));
   }
 }
 
 class _Base<T> extends Sprite {
-  final List<T> list;
+  final List<List<T>> list;
   final double Function(T) value;
-  _Base(this.list, this.value);
+  final String Function(T) texto;
+  final void Function(T value) onTap;
+  _Base(
+    this.list,
+    this.value,
+    this.texto,
+    this.onTap,
+  );
 
   @override
   void addedToStage() {
@@ -58,14 +78,25 @@ class _Base<T> extends Sprite {
   final spriteList = <Shape>[];
 
   void init() {
-    final points = <GxPoint>[];
-    final maxTotalData = list.fold<double>(
-      0.0,
-      (v, element) {
-        if (v < value(element)) v = value(element);
-        return v;
+    final points = [<GxPoint>[]];
+
+    var maxTotalData = 0.0;
+    var maxLength = 0;
+    list.forEach(
+      (element) {
+        points.add([]);
+        if (element.length > maxLength) maxLength = element.length;
+        final max = element.fold<double>(
+          0.0,
+          (v, element) {
+            if (v < value(element)) v = value(element);
+            return v;
+          },
+        );
+        if (max > maxTotalData) maxTotalData = max;
       },
     );
+
     final maxTotal = round(maxTotalData.toInt());
 
     final padding = 40.0;
@@ -73,44 +104,53 @@ class _Base<T> extends Sprite {
     h = stage.stageHeight - (padding * 2);
 
     final horizontalLines = Shape();
-    horizontalLines.graphics.lineStyle(
-      4.0,
-      Colors.green.value,
-    );
     final bk = Background(
-      length: list.length,
+      length: maxLength,
       maxTotal: maxTotal,
     );
 
     bk.addChild(horizontalLines);
     w = stage.stageWidth - (padding * 2);
-    final separatorX = w / list.length;
 
-    for (var i = 0; i < list.length; i++) {
-      final tX = (i + 1) * separatorX;
-      final dot = _Dot();
-      bk.addChild(dot);
-
-      final percent = 1 - (value(list[i]) / maxTotal);
-
-      dot.y = percent * h;
-      dot.x = tX;
-
-      if (i == 0) {
-        bk.graphics.moveTo(dot.x, dot.y);
-      } else {
-        bk.graphics.lineTo(dot.x, dot.y);
-      }
-      // print('la x del punto es ${dot.x} y su Y es ${dot.y}');
-      spriteList.add(dot);
-      points.add(GxPoint(dot.x, dot.y));
-    }
+    final separatorX = w / maxLength;
     addChild(bk);
+    list.asMap().entries.forEach(
+      (element) {
+        horizontalLines.graphics.lineStyle(4.0,
+            Colors.primaries[Random().nextInt(Colors.primaries.length)].value);
+        var color = Colors.primaries[Random().nextInt(Colors.primaries.length)];
+        for (var i = 0; i < element.value.length; i++) {
+          final tX = (i + 1) * separatorX;
+          final dot = _Dot(
+            element.value[i],
+            texto,
+            onTap,
+            color,
+          );
+          // stage.addChild(dot);
+          bk.addChild(dot);
 
-    bezierCurveThrough(
-      horizontalLines.graphics,
-      points,
-      .18,
+          final percent = 1 - (value(element.value[i]) / maxTotal);
+
+          dot.y = percent * h;
+          dot.x = tX;
+
+          if (i == 0) {
+            bk.graphics.moveTo(dot.x, dot.y);
+          } else {
+            bk.graphics.lineTo(dot.x, dot.y);
+          }
+          // print('la x del punto es ${dot.x} y su Y es ${dot.y}');
+          spriteList.add(dot);
+
+          points[element.key].add(GxPoint(dot.x, dot.y));
+        }
+        bezierCurveThrough(
+          horizontalLines.graphics,
+          points[element.key],
+          .15,
+        );
+      },
     );
     horizontalLines.graphics.endFill();
   }
@@ -183,8 +223,13 @@ class _Base<T> extends Sprite {
   double _dist(double x, double y) => sqrt(x * x + y * y);
 }
 
-class _Dot extends Shape {
+class _Dot<T> extends Shape {
   Color color;
+  final T value;
+  final String Function(T value) texto;
+  final void Function(T value) onTap;
+
+  _Dot(this.value, this.texto, this.onTap, this.color);
   @override
   void addedToStage() {
     super.addedToStage();
@@ -205,6 +250,9 @@ class _Dot extends Shape {
       color = Colors.black;
       draw();
       print('onMOuseDown');
+      // print(texto(value));
+      scale = 1.1;
+      onTap(value);
       onMouseUp.addOnce((_) {
         scale = 1;
         color = Colors.red;

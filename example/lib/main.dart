@@ -33,9 +33,12 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
+    final lista = Venta.generate(15);
+    lista.forEach((element) => print(element.cliente));
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('LineChartt'),
+        title: const Text('LineChart'),
       ),
       body: Center(
         child: Column(
@@ -47,8 +50,23 @@ class _MyHomePageState extends State<MyHomePage> {
               height: MediaQuery.of(context).size.height / 2,
               width: MediaQuery.of(context).size.width,
               child: LineChart<Venta>(
-                Venta.generate(),
+                [
+                  lista,
+                  Venta.generate(20),
+                ],
                 (e) => e.total,
+                texto: (value) => value.cliente,
+                onTap: (value) {
+                  print(value.cliente);
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text('asdasdas'),
+                      content: Text(value.cliente),
+                    ),
+
+                  );
+                },
               ),
             )
           ],
@@ -70,10 +88,10 @@ class Venta {
     this.iva,
     this.cliente,
   });
-  static List<Venta> generate() {
+  static List<Venta> generate(int length) {
     final lista = <Venta>[];
     final rng = Random();
-    for (int i = 1; i <= 10; i++) {
+    for (var i = 1; i <= length; i++) {
       lista.add(
         Venta(
           cliente: 'cliente-$i',
@@ -85,7 +103,7 @@ class Venta {
         ),
       );
     }
-    lista.sort((v1, v2) => v1.date.millisecondsSinceEpoch);
+    // lista.sort((v1, v2) => v1.date.millisecondsSinceEpoch);
     return lista;
   }
 }
