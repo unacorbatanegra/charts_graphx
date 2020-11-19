@@ -49,24 +49,46 @@ class _MyHomePageState extends State<MyHomePage> {
               margin: const EdgeInsets.all(20.0),
               height: MediaQuery.of(context).size.height / 2,
               width: MediaQuery.of(context).size.width,
-              child: LineChart<Venta>(
-                [
-                  lista,
-                  Venta.generate(20),
-                ],
-                (e) => e.total,
-                texto: (value) => value.cliente,
-                onTap: (value) {
-                  print(value.cliente);
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: Text('asdasdas'),
-                      content: Text(value.cliente),
-                    ),
+              // child: LineChart<Venta>(
+              //   [
+              //     lista,
+              //     Venta.generate(20),
+              //   ],
+              //   (e) => e.total,
+              //   text: (value) => value.cliente,
+              //   onTap: (value) {
+              //     print(value.cliente);
+              //     showDialog(
+              //       context: context,
+              //       builder: (context) => AlertDialog(
+              //         title: Text('asdasdas'),
+              //         content: Text(value.cliente),
+              //       ),
 
-                  );
-                },
+              //     );
+              //   },
+              // ),
+              child: PieChart<Venta>(
+                lista,
+                (e)=>e.total,
+                onTap: (value) => print(value.cliente),
+              //   [
+              //     lista,
+              //     Venta.generate(20),
+              //   ],
+              //   (e) => e.total,
+              //   text: (value) => value.cliente,
+              //   onTap: (value) {
+              //     print(value.cliente);
+              //     showDialog(
+              //       context: context,
+              //       builder: (context) => AlertDialog(
+              //         title: Text('asdasdas'),
+              //         content: Text(value.cliente),
+              //       ),
+
+              //     );
+              //   },
               ),
             )
           ],

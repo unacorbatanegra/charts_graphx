@@ -5,15 +5,15 @@ import 'widgets/background.dart';
 import 'widgets/bezier_control_point.dart';
 
 class LineChart<T> extends StatelessWidget {
-  final List<List<T>> lista;
+  final List<List<T>> list;
   final double Function(T value) value;
-  final String Function(T value) texto;
+  final String Function(T value) text;
   final void Function(T value) onTap;
   const LineChart(
-    this.lista,
+    this.list,
     this.value, {
     Key key,
-    this.texto,
+    this.text,
     this.onTap,
   }) : super(key: key);
 
@@ -22,9 +22,9 @@ class LineChart<T> extends StatelessWidget {
     return SceneBuilderWidget(
       builder: () => SceneController.withLayers(
         front: _LineChartPainter(
-          lista,
+          list,
           value,
-          texto,
+          text,
           onTap,
         ),
       ),
@@ -33,14 +33,14 @@ class LineChart<T> extends StatelessWidget {
 }
 
 class _LineChartPainter<T> extends SceneRoot {
-  final List<List<T>> lista;
+  final List<List<T>> list;
   final double Function(T value) value;
-  final String Function(T value) texto;
+  final String Function(T value) text;
   final void Function(T value) onTap;
   _LineChartPainter(
-    this.lista,
+    this.list,
     this.value,
-    this.texto,
+    this.text,
     this.onTap,
   );
   @override
@@ -51,7 +51,7 @@ class _LineChartPainter<T> extends SceneRoot {
   @override
   void ready() {
     super.ready();
-    addChild(_Base<T>(lista, value, texto, onTap));
+    addChild(_Base<T>(list, value, text, onTap));
   }
 }
 
