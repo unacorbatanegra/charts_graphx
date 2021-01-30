@@ -79,20 +79,19 @@ class _Base<T> extends Sprite {
 
     var maxTotalData = 0.0;
     var maxLength = 0;
-    list.forEach(
-      (element) {
-        points.add([]);
-        if (element.length > maxLength) maxLength = element.length;
-        final max = element.fold<double>(
-          0.0,
-          (v, element) {
-            if (v < value(element)) v = value(element);
-            return v;
-          },
-        );
-        if (max > maxTotalData) maxTotalData = max;
-      },
-    );
+    for (final element in list) {
+      points.add([]);
+      if (element.length > maxLength) maxLength = element.length;
+      final max = element.fold<double>(
+        0.0,
+        (v, element) {
+          if (v < value(element)) v = value(element);
+          return v;
+        },
+      );
+      if (max > maxTotalData) maxTotalData = max;
+    }
+    
     final maxTotal = round(maxTotalData.toInt());
 
     final padding = 40.0;

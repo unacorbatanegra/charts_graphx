@@ -82,20 +82,18 @@ class _Base<T> extends Sprite {
 
     var maxTotalData = 0.0;
     var maxLength = 0;
-    list.forEach(
-      (element) {
-        points.add([]);
-        if (element.length > maxLength) maxLength = element.length;
-        final max = element.fold<double>(
-          0.0,
-          (v, element) {
-            if (v < value(element)) v = value(element);
-            return v;
-          },
-        );
-        if (max > maxTotalData) maxTotalData = max;
-      },
-    );
+    for (final element in list) {
+      points.add([]);
+      if (element.length > maxLength) maxLength = element.length;
+      final max = element.fold<double>(
+        0.0,
+        (v, element) {
+          if (v < value(element)) v = value(element);
+          return v;
+        },
+      );
+      if (max > maxTotalData) maxTotalData = max;
+    }
 
     final maxTotal = round(maxTotalData.toInt());
 
@@ -173,10 +171,10 @@ class _Base<T> extends Sprite {
     }
 
     final cpoints = <BezierControlPoint>[];
-    points.forEach((e) {
-      cpoints.add(BezierControlPoint());
-    });
 
+    for (var i = 0; i < points.length; i++) {
+      cpoints.add(BezierControlPoint());
+    }
     for (var i = 1; i < len - 1; ++i) {
       final pi = points[i];
       final pp = points[i - 1];

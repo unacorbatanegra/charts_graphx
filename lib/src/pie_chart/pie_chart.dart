@@ -96,7 +96,7 @@ class _Base<T> extends Sprite {
       (v, element) => v += value(element),
     );
     stage.alignPivot(Alignment.center);
-    $debugBounds = true;
+    // $debugBounds = true;
 
     // final cX = stage.stageWidth / 2;
     // final cY = stage.stageHeight / 2;
@@ -165,7 +165,7 @@ class Pie<T> extends Sprite {
   @override
   void addedToStage() {
     mouseUseShape = true;
-    $debugBounds = true;
+    // $debugBounds = true;
     init();
     super.addedToStage();
   }

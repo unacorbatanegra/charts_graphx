@@ -33,90 +33,76 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    final lista = Venta.generate(15);
-    lista.forEach((element) => print(element.cliente));
-
+    final lista = Sale.generate(15);
     return Scaffold(
       appBar: AppBar(
         title: const Text('LineChart'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Container(
+      body: PageView(
+        children: [
+          Center(
+            child: Container(
               decoration: BoxDecoration(border: Border.all()),
               margin: const EdgeInsets.all(20.0),
               height: MediaQuery.of(context).size.height / 2,
               width: MediaQuery.of(context).size.width,
-              // child: LineChart<Venta>(
-              //   [
-              //     lista,
-              //     Venta.generate(20),
-              //   ],
-              //   (e) => e.total,
-              //   text: (value) => value.cliente,
-              //   onTap: (value) {
-              //     print(value.cliente);
-              //     showDialog(
-              //       context: context,
-              //       builder: (context) => AlertDialog(
-              //         title: Text('asdasdas'),
-              //         content: Text(value.cliente),
-              //       ),
-
-              //     );
-              //   },
-              // ),
-              child: PieChart<Venta>(
+              child: PieChart<Sale>(
                 lista,
-                (e)=>e.total,
-                onTap: (value) => print(value.cliente),
-              //   [
-              //     lista,
-              //     Venta.generate(20),
-              //   ],
-              //   (e) => e.total,
-              //   text: (value) => value.cliente,
-              //   onTap: (value) {
-              //     print(value.cliente);
-              //     showDialog(
-              //       context: context,
-              //       builder: (context) => AlertDialog(
-              //         title: Text('asdasdas'),
-              //         content: Text(value.cliente),
-              //       ),
-
-              //     );
-              //   },
+                (e) => e.total,
+                onTap: (value) => showDialog(
+                  context: context,
+                  builder: (context) =>
+                      AlertDialog(title: Text(value.customer)),
+                ),
               ),
-            )
-          ],
-        ),
+            ),
+          ),
+          Center(
+            child: Container(
+              decoration: BoxDecoration(border: Border.all()),
+              margin: const EdgeInsets.all(20.0),
+              height: MediaQuery.of(context).size.height / 2,
+              width: MediaQuery.of(context).size.width,
+              child: LineChart<Sale>(
+                [
+                  lista,
+                  Sale.generate(20),
+                ],
+                (e) => e.total,
+                text: (value) => value.customer,
+                onTap: (value) => showDialog(
+                  context: context,
+                  builder: (context) =>
+                      AlertDialog(title: Text(value.customer)),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class Venta {
+class Sale {
   final DateTime date;
   final double total;
   final double iva;
-  final String cliente;
+  final String customer;
 
-  Venta({
+  Sale({
     this.date,
     this.total,
     this.iva,
-    this.cliente,
+    this.customer,
   });
-  static List<Venta> generate(int length) {
-    final lista = <Venta>[];
+  static List<Sale> generate(int length) {
+    final lista = <Sale>[];
     final rng = Random();
     for (var i = 1; i <= length; i++) {
       lista.add(
-        Venta(
-          cliente: 'cliente-$i',
+        Sale(
+          customer: 'customer-$i',
           total: rng.nextInt(100).toDouble(),
           iva: rng.nextInt(100).toDouble(),
           date: DateTime.now().subtract(
@@ -125,7 +111,6 @@ class Venta {
         ),
       );
     }
-    // lista.sort((v1, v2) => v1.date.millisecondsSinceEpoch);
     return lista;
   }
 }
